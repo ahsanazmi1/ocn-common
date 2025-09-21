@@ -235,8 +235,8 @@ from ocn_common.trace import format_trace_log
 
 trace_id = get_current_trace_id()
 log_message = format_trace_log(
-    trace_id, 
-    "Processing request", 
+    trace_id,
+    "Processing request",
     user_id="123",
     action="login"
 )
@@ -279,7 +279,7 @@ except ValidationError as e:
 See the `examples/events/` directory for complete CloudEvent examples:
 
 - `decision_approve.json` - Approved decision event
-- `explanation_approve.json` - Decision explanation event  
+- `explanation_approve.json` - Decision explanation event
 - `audit_approve.json` - Receipt audit event
 
 ## Migration Guide
