@@ -4,11 +4,21 @@
   "title": "Orca Decision CloudEvent",
   "description": "Schema for Orca decision events, following CloudEvents v1.0 specification",
   "type": "object",
-  "required": ["specversion", "id", "source", "type", "subject", "time", "data"],
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "subject",
+    "time",
+    "data"
+  ],
   "properties": {
     "specversion": {
       "type": "string",
-      "enum": ["1.0"],
+      "enum": [
+        "1.0"
+      ],
       "description": "The version of the CloudEvents specification which the event uses"
     },
     "id": {
@@ -22,7 +32,9 @@
     },
     "type": {
       "type": "string",
-      "enum": ["ocn.orca.decision.v1"],
+      "enum": [
+        "ocn.orca.decision.v1"
+      ],
       "description": "The type of event, e.g., 'ocn.orca.decision.v1'"
     },
     "subject": {
@@ -36,7 +48,9 @@
     },
     "datacontenttype": {
       "type": "string",
-      "enum": ["application/vnd.ocn.ap2+json; version=1"],
+      "enum": [
+        "application/vnd.ocn.ap2+json; version=1"
+      ],
       "description": "Content type of the data payload"
     },
     "dataschema": {
@@ -47,7 +61,14 @@
     "data": {
       "type": "object",
       "description": "The AP2 decision payload",
-      "required": ["ap2_version", "intent", "cart", "payment", "decision", "signing"],
+      "required": [
+        "ap2_version",
+        "intent",
+        "cart",
+        "payment",
+        "decision",
+        "signing"
+      ],
       "properties": {
         "ap2_version": {
           "type": "string",
@@ -58,7 +79,7 @@
           "description": "Intent mandate data"
         },
         "cart": {
-          "type": "object", 
+          "type": "object",
           "description": "Cart mandate data"
         },
         "payment": {
@@ -68,11 +89,21 @@
         "decision": {
           "type": "object",
           "description": "Decision result",
-          "required": ["result", "risk_score", "reasons", "actions", "meta"],
+          "required": [
+            "result",
+            "risk_score",
+            "reasons",
+            "actions",
+            "meta"
+          ],
           "properties": {
             "result": {
               "type": "string",
-              "enum": ["APPROVE", "DECLINE", "REVIEW"],
+              "enum": [
+                "APPROVE",
+                "DECLINE",
+                "REVIEW"
+              ],
               "description": "Decision result"
             },
             "risk_score": {
@@ -107,7 +138,10 @@
           "description": "Digital signing information",
           "properties": {
             "vc_proof": {
-              "type": ["string", "null"],
+              "type": [
+                "string",
+                "null"
+              ],
               "description": "Verifiable credential proof"
             },
             "receipt_hash": {
@@ -169,7 +203,9 @@
             "type": "immediate",
             "description": "Immediate payment"
           },
-          "auth_requirements": ["pin"],
+          "auth_requirements": [
+            "pin"
+          ],
           "metadata": {
             "card_brand": "visa"
           }
@@ -177,8 +213,13 @@
         "decision": {
           "result": "APPROVE",
           "risk_score": 0.15,
-          "reasons": ["Low risk transaction", "Verified user"],
-          "actions": ["Process payment"],
+          "reasons": [
+            "Low risk transaction",
+            "Verified user"
+          ],
+          "actions": [
+            "Process payment"
+          ],
           "meta": {
             "model_version": "0.1.0"
           }
