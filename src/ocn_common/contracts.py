@@ -6,10 +6,8 @@ and CloudEvents against their respective schemas.
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
-import jsonschema
 from jsonschema import Draft202012Validator, ValidationError
 
 
