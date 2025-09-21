@@ -5,13 +5,22 @@ description = "OCN ocn-common"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{name="Ahsan Azmi"}]
-dependencies = []
+dependencies = [
+    "jsonschema>=4.20.0"
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "coverage", "ruff", "black", "mypy"]
+dev = ["pytest>=8", "coverage", "ruff", "black", "mypy", "types-jsonschema"]
 
 [tool.ruff]
 line-length = 100
 
 [tool.black]
 line-length = 100
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ocn_common"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
