@@ -6,7 +6,7 @@ import json
 import pytest
 from pathlib import Path
 
-from src.ocn_common.contracts import (
+from ocn_common.contracts import (
     ContractValidator,
     ContractValidationError,
     validate_json,
