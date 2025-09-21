@@ -3,7 +3,7 @@ Tests for trace utility functionality.
 """
 
 import uuid
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from ocn_common.trace import (
     TRACE_HEADER,
