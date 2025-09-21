@@ -1,294 +1,477 @@
-# CloudEvents Reference
-
-This document provides a comprehensive reference for CloudEvents used in the OCN ecosystem.
+# CloudEvents Reference for OCN
 
 ## Overview
 
-CloudEvents is a specification for describing event data in a common way. The OCN ecosystem uses CloudEvents v1.0 to ensure consistent event structure across all services.
+The Open Checkout Network (OCN) uses CloudEvents (CE) as the standard event format for inter-service communication. This document defines the CE attributes, event types, and sample envelopes used across the OCN ecosystem.
 
-## Standard CloudEvent Structure
+## CloudEvents Specification
 
-All CloudEvents in the OCN ecosystem follow this base structure:
+OCN implements CloudEvents specification version 1.0.2 with extensions for OCN-specific requirements.
 
-```json
-{
-  "specversion": "1.0",
-  "id": "unique-event-id",
-  "source": "https://service.ocn.ai/v1",
-  "type": "ocn.service.event.v1",
-  "subject": "trace-id-or-correlation-id",
-  "time": "2024-01-01T12:00:00Z",
-  "datacontenttype": "application/json",
-  "dataschema": "https://schemas.ocn.ai/events/service/event/v1",
-  "data": {
-    // Event-specific payload
-  }
-}
-```
+## Core Attributes
 
-### Required Fields
+### Required Attributes
 
-- **specversion**: Always "1.0" for OCN events
-- **id**: Unique identifier for this event instance
-- **source**: URI identifying the event producer
-- **type**: Event type following OCN naming convention
-- **subject**: Trace ID or correlation identifier (see Trace section below)
-- **time**: ISO 8601 timestamp when the event occurred
+| Attribute | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `specversion` | String | CloudEvents specification version | `"1.0.2"` |
+| `type` | String | OCN event type identifier | `"ocn.orca.decision.v1"` |
+| `source` | URI | Service that generated the event | `"https://api.ocn.orca.com"` |
+| `id` | String | Unique event identifier | `"evt_550e8400-e29b-41d4-a716-446655440000"` |
+| `time` | Timestamp | ISO 8601 event timestamp | `"2024-01-21T12:00:00.000Z"` |
+| `datacontenttype` | String | Content type of the data payload | `"application/json"` |
 
-### Optional Fields
+### Optional Attributes
 
-- **datacontenttype**: MIME type of the data payload (default: "application/json")
-- **dataschema**: URI reference to the event's schema
-- **data**: The actual event payload
+| Attribute | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `subject` | String | Event subject identifier | `"user_12345"` |
+| `dataschema` | URI | JSON Schema for data validation | `"https://schemas.ocn.com/decision/v1"` |
+| `traceid` | String | Distributed tracing identifier | `"550e8400-e29b-41d4-a716-446655440000"` |
+| `spanid` | String | Span identifier for tracing | `"span_abc123"` |
 
-## OCN Event Types
+### OCN Extensions
+
+| Extension | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `ocnservice` | String | OCN service identifier | `"orca"` |
+| `ocnversion` | String | Service version | `"1.0.0"` |
+| `ocnenvironment` | String | Deployment environment | `"production"` |
+| `ocnregion` | String | AWS region | `"us-east-1"` |
+| `ocncorrelationid` | String | Business correlation ID | `"txn_abc123"` |
+
+## Event Types
 
 ### Decision Events
 
-**Type**: `ocn.orca.decision.v1`
+#### ocn.orca.decision.v1
 
-Emitted by the Orca decision engine when processing transactions.
+Decision result from Orca decision engine.
 
 ```json
 {
-  "specversion": "1.0",
-  "id": "decision-123",
-  "source": "https://orca.ocn.ai/v1",
+  "specversion": "1.0.2",
   "type": "ocn.orca.decision.v1",
-  "subject": "txn_trace_456",
-  "time": "2024-01-01T12:00:00Z",
+  "source": "https://api.ocn.orca.com",
+  "id": "evt_decision_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:00.000Z",
   "datacontenttype": "application/json",
-  "dataschema": "https://schemas.ocn.ai/events/orca/decision/v1",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/decision/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "orca",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "txn_abc123",
   "data": {
-    "decision": "APPROVE",
-    "amount": 100.00,
-    "currency": "USD",
+    "decision_id": "dec_550e8400-e29b-41d4-a716-446655440000",
+    "result": "APPROVE",
+    "confidence": 0.95,
     "risk_score": 0.15,
-    "reasons": ["Low risk profile", "Within limits"],
-    "trace_id": "txn_trace_456"
+    "processing_time_ms": 45,
+    "rules_triggered": [
+      "velocity_check",
+      "mcc_validation",
+      "ml_risk_assessment"
+    ],
+    "transaction": {
+      "amount": 99.99,
+      "currency": "USD",
+      "merchant_id": "merchant_abc123",
+      "mcc": "5411"
+    },
+    "user": {
+      "id": "user_12345",
+      "risk_profile": "standard"
+    },
+    "metadata": {
+      "model_version": "1.2.0",
+      "feature_vector": ["f1", "f2", "f3"],
+      "explanation_available": true
+    }
   }
 }
 ```
 
-### Explanation Events
+#### ocn.orca.explanation.v1
 
-**Type**: `ocn.orca.explanation.v1`
-
-Emitted by the Orca decision engine to provide AI-generated explanations.
+AI-generated explanation for a decision.
 
 ```json
 {
-  "specversion": "1.0",
-  "id": "explanation-123",
-  "source": "https://orca.ocn.ai/v1",
+  "specversion": "1.0.2",
   "type": "ocn.orca.explanation.v1",
-  "subject": "txn_trace_456",
-  "time": "2024-01-01T12:00:01Z",
+  "source": "https://api.ocn.orca.com",
+  "id": "evt_explanation_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:05.000Z",
   "datacontenttype": "application/json",
-  "dataschema": "https://schemas.ocn.ai/events/orca/explanation/v1",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/explanation/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "orca",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "txn_abc123",
   "data": {
-    "decision_id": "decision-123",
-    "reason": "Transaction approved due to low risk indicators",
-    "key_signals": ["amount within limits", "merchant reputation good"],
-    "mitigation": "Standard fraud monitoring applied",
-    "confidence": 0.85,
-    "trace_id": "txn_trace_456"
+    "explanation_id": "exp_550e8400-e29b-41d4-a716-446655440000",
+    "decision_id": "dec_550e8400-e29b-41d4-a716-446655440000",
+    "explanation_type": "natural_language",
+    "language": "en",
+    "content": "Your transaction was approved based on your consistent spending patterns and low risk profile. The amount is within your typical range for this merchant category.",
+    "confidence": 0.88,
+    "generation_time_ms": 1200,
+    "model": {
+      "name": "orca-explainer-v2",
+      "version": "2.1.0"
+    },
+    "factors": [
+      {
+        "factor": "spending_pattern",
+        "impact": "positive",
+        "weight": 0.4,
+        "description": "Transaction amount consistent with historical patterns"
+      },
+      {
+        "factor": "merchant_trust",
+        "impact": "positive", 
+        "weight": 0.3,
+        "description": "Merchant has good reputation and low fraud rate"
+      },
+      {
+        "factor": "time_pattern",
+        "impact": "neutral",
+        "weight": 0.2,
+        "description": "Transaction time within normal hours"
+      }
+    ],
+    "metadata": {
+      "llm_provider": "azure_openai",
+      "prompt_version": "v1.2",
+      "temperature": 0.7
+    }
+  }
+}
+```
+
+### Receipt Events
+
+#### ocn.weave.receipt.v1
+
+Receipt storage confirmation from Weave.
+
+```json
+{
+  "specversion": "1.0.2",
+  "type": "ocn.weave.receipt.v1",
+  "source": "https://api.ocn.weave.com",
+  "id": "evt_receipt_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:02.000Z",
+  "datacontenttype": "application/json",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/receipt/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "weave",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "txn_abc123",
+  "data": {
+    "receipt_id": "rec_550e8400-e29b-41d4-a716-446655440000",
+    "receipt_type": "decision",
+    "provider_id": "ocn-orca-v1",
+    "content_hash": "sha256:abc123def456...",
+    "storage_location": "s3://ocn-receipts/production/2024/01/21/rec_550e8400...",
+    "storage_time_ms": 12,
+    "content": {
+      "decision_id": "dec_550e8400-e29b-41d4-a716-446655440000",
+      "result": "APPROVE",
+      "timestamp": "2024-01-21T12:00:00.000Z",
+      "transaction": {
+        "amount": 99.99,
+        "currency": "USD",
+        "merchant_id": "merchant_abc123"
+      }
+    },
+    "metadata": {
+      "compression": "gzip",
+      "encryption": "aes-256-gcm",
+      "retention_days": 2555
+    }
   }
 }
 ```
 
 ### Audit Events
 
-**Type**: `ocn.weave.audit.v1`
+#### ocn.weave.audit.v1
 
-Emitted by the Weave receipt store for audit trail purposes.
+Audit trail event for compliance and monitoring.
 
 ```json
 {
-  "specversion": "1.0",
-  "id": "audit-123",
-  "source": "https://weave.ocn.ai/v1",
+  "specversion": "1.0.2",
   "type": "ocn.weave.audit.v1",
-  "subject": "txn_trace_456",
-  "time": "2024-01-01T12:00:02Z",
+  "source": "https://api.ocn.weave.com",
+  "id": "evt_audit_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:01.000Z",
   "datacontenttype": "application/json",
-  "dataschema": "https://schemas.ocn.ai/events/weave/audit/v1",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/audit/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "weave",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "txn_abc123",
   "data": {
-    "receipt_id": "receipt-789",
-    "event_hash": "sha256:abc123...",
-    "provider_id": "ocn-orca-v1",
-    "trust_verified": true,
-    "trace_id": "txn_trace_456"
+    "audit_id": "audit_550e8400-e29b-41d4-a716-446655440000",
+    "event_type": "receipt_stored",
+    "action": "CREATE",
+    "resource_type": "receipt",
+    "resource_id": "rec_550e8400-e29b-41d4-a716-446655440000",
+    "actor": {
+      "type": "service",
+      "id": "weave-receipt-service",
+      "version": "1.0.0"
+    },
+    "target": {
+      "type": "user",
+      "id": "user_12345"
+    },
+    "result": "SUCCESS",
+    "details": {
+      "storage_location": "s3://ocn-receipts/production/2024/01/21/",
+      "content_size_bytes": 1024,
+      "processing_time_ms": 12
+    },
+    "compliance": {
+      "pci_dss": true,
+      "gdpr": true,
+      "sox": true
+    },
+    "metadata": {
+      "request_id": "req_abc123",
+      "client_ip": "203.0.113.1",
+      "user_agent": "OCN-Client/1.0.0"
+    }
   }
 }
 ```
 
-## Trace
+### Credit Events
 
-### Trace ID Propagation
+#### ocn.okra.quote.v1
 
-The OCN ecosystem uses trace IDs for request correlation and observability. Trace IDs are propagated through the `subject` field of CloudEvents.
-
-#### Trace ID Format
-
-Trace IDs follow UUID4 format for uniqueness and consistency:
-
-```
-550e8400-e29b-41d4-a716-446655440000
-```
-
-#### Trace ID Usage in CloudEvents
-
-The `subject` field of every CloudEvent should contain the trace ID for the request chain:
+Credit quote from Okra credit agent.
 
 ```json
 {
-  "specversion": "1.0",
-  "id": "event-123",
-  "source": "https://service.ocn.ai/v1",
-  "type": "ocn.service.event.v1",
-  "subject": "550e8400-e29b-41d4-a716-446655440000",
-  "time": "2024-01-01T12:00:00Z",
+  "specversion": "1.0.2",
+  "type": "ocn.okra.quote.v1",
+  "source": "https://api.ocn.okra.com",
+  "id": "evt_quote_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:03.000Z",
+  "datacontenttype": "application/json",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/quote/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "okra",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "credit_req_abc123",
   "data": {
-    "trace_id": "550e8400-e29b-41d4-a716-446655440000"
+    "quote_id": "quote_550e8400-e29b-41d4-a716-446655440000",
+    "credit_decision": "APPROVE",
+    "approved_amount": 5000.00,
+    "interest_rate": 12.5,
+    "term_months": 36,
+    "monthly_payment": 167.50,
+    "credit_score": 720,
+    "dti_ratio": 0.35,
+    "processing_time_ms": 23,
+    "user": {
+      "id": "user_12345",
+      "income": 75000.00,
+      "employment_status": "employed"
+    },
+    "metadata": {
+      "model_version": "credit-v1.3",
+      "risk_tier": "standard",
+      "offer_expires_at": "2024-01-28T12:00:00.000Z"
+    }
   }
 }
 ```
 
-#### Trace ID Generation
+### Wallet Events
 
-Use the `ocn_common.trace` module for trace ID management:
+#### ocn.opal.selection.v1
 
-```python
-from ocn_common.trace import new_trace_id, inject_trace_id_ce
+Wallet selection decision from Opal wallet agent.
 
-# Generate new trace ID
-trace_id = new_trace_id()
-
-# Inject into CloudEvent envelope
-envelope = {
-    "specversion": "1.0",
-    "id": "event-123",
-    "type": "ocn.service.event.v1"
-}
-envelope_with_trace = inject_trace_id_ce(envelope, trace_id)
-# envelope_with_trace["subject"] == trace_id
-```
-
-#### HTTP Header Propagation
-
-Trace IDs are propagated via the `x-ocn-trace-id` HTTP header:
-
-```http
-POST /events HTTP/1.1
-Host: weave.ocn.ai
-Content-Type: application/json
-x-ocn-trace-id: 550e8400-e29b-41d4-a716-446655440000
-
+```json
 {
-  "specversion": "1.0",
-  "id": "event-123",
-  "type": "ocn.orca.decision.v1",
-  "subject": "550e8400-e29b-41d4-a716-446655440000",
-  "data": {...}
+  "specversion": "1.0.2",
+  "type": "ocn.opal.selection.v1",
+  "source": "https://api.ocn.opal.com",
+  "id": "evt_selection_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:04.000Z",
+  "datacontenttype": "application/json",
+  "subject": "user_12345",
+  "dataschema": "https://schemas.ocn.com/selection/v1",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "opal",
+  "ocnversion": "1.0.0",
+  "ocnenvironment": "production",
+  "ocnregion": "us-east-1",
+  "ocncorrelationid": "wallet_req_abc123",
+  "data": {
+    "selection_id": "sel_550e8400-e29b-41d4-a716-446655440000",
+    "result": "ALLOWED",
+    "selected_wallet": "wallet_primary",
+    "transaction_amount": 99.99,
+    "mcc_code": "5411",
+    "channel": "pos",
+    "processing_time_ms": 8,
+    "controls_checked": [
+      "daily_limit",
+      "merchant_restriction",
+      "balance_check"
+    ],
+    "user": {
+      "id": "user_12345",
+      "wallet_balance": 2500.00,
+      "daily_spent": 45.67
+    },
+    "metadata": {
+      "rule_engine_version": "opal-v1.1",
+      "control_version": "controls-v2.0"
+    }
+  }
 }
 ```
 
-#### FastAPI Middleware Integration
+## Event Routing
 
-Use the trace middleware for automatic trace ID management:
+### Routing Rules
 
-```python
-from fastapi import FastAPI
-from ocn_common.trace import trace_middleware
+Events are routed based on the `type` attribute using the following patterns:
 
-app = FastAPI()
-app = trace_middleware(app)
+- `ocn.{service}.{operation}.v{major}` - Service-specific events
+- `ocn.common.{operation}.v{major}` - Common/shared events
+- `ocn.system.{operation}.v{major}` - System/infrastructure events
 
-# Now all requests automatically have trace ID management
-@app.post("/events")
-async def handle_event(event: CloudEvent):
-    # Current trace ID available via get_current_trace_id()
-    pass
+### Subscription Examples
+
+```json
+{
+  "subscription_id": "sub_orca_decisions",
+  "event_types": ["ocn.orca.decision.v1"],
+  "endpoint": "https://api.ocn.weave.com/events/decision",
+  "filters": {
+    "ocnservice": "orca",
+    "ocnenvironment": "production"
+  }
+}
 ```
 
-#### Trace ID Context
+## Event Validation
 
-The trace ID is maintained in a context variable for the duration of the request:
+### Schema Validation
 
-```python
-from ocn_common.trace import get_current_trace_id, set_current_trace_id
+All events must validate against their respective JSON schemas:
 
-# Get current trace ID
-trace_id = get_current_trace_id()
-
-# Set trace ID (usually done by middleware)
-set_current_trace_id("custom-trace-id")
+```bash
+# Validate decision event
+curl -X POST https://schemas.ocn.com/validate \
+  -H "Content-Type: application/json" \
+  -d @decision_event.json
 ```
 
-#### Logging with Trace IDs
+### Required Validations
 
-Use the trace log formatter for consistent logging:
+1. **Attribute Validation**: All required CE attributes present
+2. **Type Validation**: Event type matches expected format
+3. **Schema Validation**: Data payload validates against schema
+4. **Extension Validation**: OCN extensions are valid
+5. **Timestamp Validation**: Time attribute is valid ISO 8601
+
+## Error Events
+
+### ocn.common.error.v1
+
+Standard error event format.
+
+```json
+{
+  "specversion": "1.0.2",
+  "type": "ocn.common.error.v1",
+  "source": "https://api.ocn.orca.com",
+  "id": "evt_error_550e8400-e29b-41d4-a716-446655440000",
+  "time": "2024-01-21T12:00:00.000Z",
+  "datacontenttype": "application/json",
+  "traceid": "550e8400-e29b-41d4-a716-446655440000",
+  "ocnservice": "orca",
+  "ocncorrelationid": "txn_abc123",
+  "data": {
+    "error_id": "err_550e8400-e29b-41d4-a716-446655440000",
+    "error_code": "VALIDATION_FAILED",
+    "error_message": "Invalid payment mandate signature",
+    "error_details": {
+      "field": "signature",
+      "reason": "Invalid ECDSA signature"
+    },
+    "original_request": {
+      "type": "PaymentMandate",
+      "id": "payment_abc123"
+    }
+  }
+}
+```
+
+## Implementation Guidelines
+
+### Event Publishing
 
 ```python
-from ocn_common.trace import format_trace_log
+from cloudevents.http import CloudEvent, to_structured
 
-trace_id = get_current_trace_id()
-log_message = format_trace_log(
-    trace_id,
-    "Processing request",
-    user_id="123",
-    action="login"
+# Create decision event
+event = CloudEvent(
+    type="ocn.orca.decision.v1",
+    source="https://api.ocn.orca.com",
+    data={
+        "decision_id": "dec_123",
+        "result": "APPROVE",
+        "confidence": 0.95
+    }
 )
-# Result: "[trace_id=550e8400-e29b-41d4-a716-446655440000] Processing request user_id=123 action=login"
+
+# Add OCN extensions
+event["ocnservice"] = "orca"
+event["ocnversion"] = "1.0.0"
+event["traceid"] = "550e8400-e29b-41d4-a716-446655440000"
+
+# Convert to structured format
+headers, body = to_structured(event)
 ```
 
-### Trace ID Best Practices
-
-1. **Always include trace ID in CloudEvent subject**: Ensures end-to-end correlation
-2. **Propagate via HTTP headers**: Use `x-ocn-trace-id` for service-to-service calls
-3. **Include in logs**: Use structured logging with trace ID for debugging
-4. **Generate early**: Create trace ID at the start of request processing
-5. **Maintain context**: Use context variables to keep trace ID available throughout request lifecycle
-
-## Event Schemas
-
-All CloudEvents in the OCN ecosystem have corresponding JSON schemas for validation:
-
-- Decision events: `common/events/v1/orca.decision.v1.schema.json`
-- Explanation events: `common/events/v1/orca.explanation.v1.schema.json`
-- Audit events: `common/events/v1/weave.audit.v1.schema.json`
-
-## Validation
-
-Use the `ocn_common.contracts` module for CloudEvent validation:
+### Event Consumption
 
 ```python
-from ocn_common.contracts import validate_cloudevent
+from cloudevents.http import from_http
 
-# Validate CloudEvent against schema
-try:
-    validate_cloudevent(event_data, "orca.decision.v1")
-    print("Valid CloudEvent")
-except ValidationError as e:
-    print(f"Invalid CloudEvent: {e}")
+# Parse incoming event
+event = from_http(headers, body)
+
+# Validate event type
+if event["type"] == "ocn.orca.decision.v1":
+    process_decision(event.data)
+elif event["type"] == "ocn.orca.explanation.v1":
+    process_explanation(event.data)
 ```
 
-## Examples
-
-See the `examples/events/` directory for complete CloudEvent examples:
-
-- `decision_approve.json` - Approved decision event
-- `explanation_approve.json` - Decision explanation event
-- `audit_approve.json` - Receipt audit event
-
-## Migration Guide
-
-When upgrading CloudEvent schemas:
-
-1. Check schema version compatibility
-2. Update event type versions (e.g., v1 → v2)
-3. Validate all event producers and consumers
-4. Update documentation and examples
-
-See `docs/migration_guide_ap2.md` for detailed migration instructions.
+This CloudEvents reference provides the foundation for event-driven communication across the OCN ecosystem.
