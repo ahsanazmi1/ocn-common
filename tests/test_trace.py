@@ -3,7 +3,7 @@ Tests for trace utility functionality.
 """
 
 import uuid
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from ocn_common.trace import (
     TRACE_HEADER,
@@ -236,12 +236,16 @@ class TestTraceMiddleware:
         mock_app = MagicMock()
         mock_app.user_middleware = []
 
-        # Add trace middleware
-        result = trace_middleware(mock_app)
+        # Mock FastAPI imports to simulate FastAPI being available
+        with patch.dict(
+            "sys.modules", {"fastapi": MagicMock(), "starlette.middleware.base": MagicMock()}
+        ):
+            # Add trace middleware
+            result = trace_middleware(mock_app)
 
-        # Should have added one middleware
-        assert mock_app.add_middleware.call_count == 1
-        assert result is mock_app
+            # Should have added one middleware when FastAPI is available
+            assert mock_app.add_middleware.call_count == 1
+            assert result is mock_app
 
     def test_trace_middleware_returns_app(self):
         """Test that trace_middleware returns the app for chaining."""
