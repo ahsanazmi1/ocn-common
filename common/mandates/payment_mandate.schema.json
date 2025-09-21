@@ -12,7 +12,8 @@
       "description": "Payment method type"
     },
     "modality": {
-      "$ref": "modality.schema.json"
+      "type": "object",
+      "description": "Payment modality information"
     },
     "auth_requirements": {
       "type": "array",

@@ -21,7 +21,8 @@
           "description": "Type of actor"
         },
         "profile": {
-          "$ref": "actor_profile.schema.json"
+          "type": "object",
+          "description": "Actor profile information"
         }
       }
     },

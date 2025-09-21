@@ -54,13 +54,16 @@
           "description": "AP2 contract version"
         },
         "intent": {
-          "$ref": "../mandates/intent_mandate.schema.json"
+          "type": "object",
+          "description": "Intent mandate data"
         },
         "cart": {
-          "$ref": "../mandates/cart_mandate.schema.json"
+          "type": "object", 
+          "description": "Cart mandate data"
         },
         "payment": {
-          "$ref": "../mandates/payment_mandate.schema.json"
+          "type": "object",
+          "description": "Payment mandate data"
         },
         "decision": {
           "type": "object",
