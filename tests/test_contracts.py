@@ -57,7 +57,11 @@ class TestSchemaLoader:
             assert mandate in schemas["mandates"]
 
         # Check that we have expected event schemas
-        expected_events = ["orca.decision.v1.schema", "orca.explanation.v1.schema", "weave.audit.v1.schema"]
+        expected_events = [
+            "orca.decision.v1.schema",
+            "orca.explanation.v1.schema",
+            "weave.audit.v1.schema",
+        ]
         for event in expected_events:
             assert event in schemas["events"]
 
