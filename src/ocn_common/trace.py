@@ -7,7 +7,7 @@ used across all OCN services to maintain request correlation and observability.
 
 import uuid
 from contextvars import ContextVar
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 # Context variable for storing trace ID in the current execution context
 trace_context: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
@@ -195,7 +195,7 @@ def trace_middleware(app):
         propagation across all endpoints. The trace ID will be available
         via get_current_trace_id() in your route handlers.
     """
-    from fastapi import Request, Response
+    from fastapi import Request
     from starlette.middleware.base import BaseHTTPMiddleware
 
     class TraceMiddleware(BaseHTTPMiddleware):

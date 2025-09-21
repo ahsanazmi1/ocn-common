@@ -3,9 +3,7 @@ Tests for trace utility functionality.
 """
 
 import uuid
-from unittest.mock import patch
 
-import pytest
 
 from ocn_common.trace import (
     TRACE_HEADER,
@@ -17,7 +15,6 @@ from ocn_common.trace import (
     inject_trace_id_ce,
     new_trace_id,
     set_current_trace_id,
-    trace_context,
     trace_middleware,
 )
 
