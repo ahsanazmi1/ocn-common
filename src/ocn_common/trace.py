@@ -10,7 +10,7 @@ from contextvars import ContextVar
 from typing import Any, Dict, Optional
 
 # Context variable for storing trace ID in the current execution context
-trace_context: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
+trace_context: ContextVar[Optional[str]] = ContextVar('trace_id', default=None)
 
 # HTTP header name for trace ID propagation
 TRACE_HEADER = "x-ocn-trace-id"
@@ -63,11 +63,11 @@ def ensure_trace_id(ctx: Optional[Dict[str, Any]]) -> str:
         ctx = {}
 
     # Check if we have a valid trace ID (UUID4 format)
-    existing_trace_id = ctx.get("trace_id")
+    existing_trace_id = ctx.get('trace_id')
     if not existing_trace_id or not _is_valid_trace_id(existing_trace_id):
-        ctx["trace_id"] = new_trace_id()
+        ctx['trace_id'] = new_trace_id()
 
-    return ctx["trace_id"]
+    return ctx['trace_id']
 
 
 def _is_valid_trace_id(trace_id: str) -> bool:
@@ -117,7 +117,7 @@ def inject_trace_id_ce(envelope: Dict[str, Any], trace_id: str) -> Dict[str, Any
     """
     # Create a copy to avoid modifying the original
     modified_envelope = envelope.copy()
-    modified_envelope["subject"] = trace_id
+    modified_envelope['subject'] = trace_id
     return modified_envelope
 
 
@@ -195,35 +195,41 @@ def trace_middleware(app):
         propagation across all endpoints. The trace ID will be available
         via get_current_trace_id() in your route handlers.
     """
-    from fastapi import Request
-    from starlette.middleware.base import BaseHTTPMiddleware
+    try:
+        from fastapi import Request
+        from starlette.middleware.base import BaseHTTPMiddleware
 
-    class TraceMiddleware(BaseHTTPMiddleware):
-        async def dispatch(self, request: Request, call_next):
-            # Extract trace ID from header
-            trace_id = request.headers.get(TRACE_HEADER)
+        class TraceMiddleware(BaseHTTPMiddleware):
+            async def dispatch(self, request: Request, call_next):
+                # Extract trace ID from header
+                trace_id = request.headers.get(TRACE_HEADER)
 
-            # If no trace ID in header, generate a new one
-            if not trace_id:
-                trace_id = new_trace_id()
+                # If no trace ID in header, generate a new one
+                if not trace_id:
+                    trace_id = new_trace_id()
 
-            # Set trace ID in context
-            set_current_trace_id(trace_id)
+                # Set trace ID in context
+                set_current_trace_id(trace_id)
 
-            try:
-                # Process the request
-                response = await call_next(request)
+                try:
+                    # Process the request
+                    response = await call_next(request)
 
-                # Add trace ID to response headers for client correlation
-                response.headers[TRACE_HEADER] = trace_id
+                    # Add trace ID to response headers for client correlation
+                    response.headers[TRACE_HEADER] = trace_id
 
-                return response
-            finally:
-                # Clean up context
-                clear_current_trace_id()
+                    return response
+                finally:
+                    # Clean up context
+                    clear_current_trace_id()
 
-    # Add the middleware to the app
-    app.add_middleware(TraceMiddleware)
+        # Add the middleware to the app
+        app.add_middleware(TraceMiddleware)
+
+    except ImportError:
+        # FastAPI not available - just return the app unchanged
+        # This allows the function to work in environments without FastAPI
+        pass
 
     return app
 
@@ -252,7 +258,11 @@ def create_trace_context(trace_id: Optional[str] = None) -> Dict[str, str]:
     if trace_id is None:
         trace_id = new_trace_id()
 
-    return {"trace_id": trace_id, "service": "ocn-common", "version": "1.0.0"}
+    return {
+        'trace_id': trace_id,
+        'service': 'ocn-common',
+        'version': '1.0.0'
+    }
 
 
 def format_trace_log(trace_id: str, message: str, **kwargs) -> str:
