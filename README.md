@@ -1,5 +1,7 @@
 # OCN Common — Shared Libraries for the Open Checkout Network
 
+[![Contracts Validation](https://github.com/ocn-ai/ocn-common/actions/workflows/contracts.yml/badge.svg)](https://github.com/ocn-ai/ocn-common/actions/workflows/contracts.yml)
+[![Security Validation](https://github.com/ocn-ai/ocn-common/actions/workflows/security.yml/badge.svg)](https://github.com/ocn-ai/ocn-common/actions/workflows/security.yml)
 [![CI](https://github.com/ocn-ai/ocn-common/actions/workflows/ci.yml/badge.svg)](https://github.com/ocn-ai/ocn-common/actions/workflows/ci.yml)
 
 **OCN Common** provides shared libraries, schemas, and utilities for the [Open Checkout Network (OCN)](https://github.com/ocn-ai/ocn-common) ecosystem.

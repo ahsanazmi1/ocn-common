@@ -84,7 +84,7 @@ class SchemaLoader:
 
     def list_available_schemas(self) -> Dict[str, list]:
         """List all available schemas by type."""
-        schemas = {"mandates": [], "events": []}
+        schemas: Dict[str, list] = {"mandates": [], "events": []}
 
         # List mandate schemas
         mandates_path = self.base_path / "common" / "mandates"

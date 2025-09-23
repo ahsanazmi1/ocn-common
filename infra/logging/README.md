@@ -485,4 +485,3 @@ def should_sample_log(log_level: str) -> bool:
 ---
 
 *This infrastructure guide is part of the OCN observability framework. For questions or issues, refer to the main [Observability Specification](../docs/observability.md).*
-

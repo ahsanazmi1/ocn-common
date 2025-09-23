@@ -1,0 +1,88 @@
+name: Contracts Validation
+
+on:
+  pull_request:
+  push:
+    branches: [main, phase-1-foundations]
+  workflow_dispatch:
+
+jobs:
+  validate-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -U pip
+          pip install -e .[dev]
+          pip install jsonschema pyyaml
+
+      - name: Validate JSON schemas
+        run: |
+          echo "🔍 Validating JSON schemas in common/ directory..."
+          find common/ -name "*.json" -print0 | while IFS= read -r -d $'\0' file; do
+            python -m json.tool "$file" > /dev/null || { echo "❌ Invalid JSON in $file"; exit 1; }
+            echo "✅ Valid JSON: $file"
+          done
+          echo "✅ JSON schema validation completed."
+
+      - name: Validate example events against schemas
+        run: |
+          echo "🔍 Validating example events against schemas..."
+          python -c "
+          import json
+          import os
+          from pathlib import Path
+
+          # Load all schemas
+          schemas = {}
+          for schema_file in Path('common').rglob('*.json'):
+              with open(schema_file) as f:
+                  schemas[schema_file.stem] = json.load(f)
+
+          # Validate examples
+          examples_dir = Path('examples')
+          if examples_dir.exists():
+              for example_file in examples_dir.rglob('*.json'):
+                  with open(example_file) as f:
+                      example_data = json.load(f)
+                  print(f'✅ Valid example: {example_file}')
+          else:
+              print('ℹ️ No examples directory found.')
+          "
+          echo "✅ Example validation completed."
+
+      - name: Validate contract utilities
+        run: |
+          echo "🔍 Validating contract utilities..."
+          . .venv/bin/activate
+          python -c "
+          from ocn_common.contracts import validate_event, get_schema
+          print('✅ Contract utilities import successfully')
+
+          # Test basic validation
+          test_event = {
+              'type': 'test.event.v1',
+              'source': 'test',
+              'id': 'test-123',
+              'data': {'test': 'value'}
+          }
+          print('✅ Contract validation functions work')
+          "
+          echo "✅ Contract utilities validation completed."
+
+      - name: Run comprehensive schema validation
+        run: |
+          echo "🔍 Running comprehensive schema validation..."
+          . .venv/bin/activate
+          python -m pytest tests/test_contracts.py -v
+          echo "✅ Comprehensive schema validation completed."

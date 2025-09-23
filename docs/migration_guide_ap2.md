@@ -662,4 +662,3 @@ class AP2Rollback:
 - [ ] Plan deprecation of pre-AP2 support
 
 This migration guide ensures smooth transition from pre-AP2 formats to AP2 mandates while maintaining data integrity and system reliability.
-

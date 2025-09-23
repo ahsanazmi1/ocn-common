@@ -402,4 +402,3 @@ Indicates agent availability and processing modality.
 ```
 
 This specification provides the foundation for secure, interoperable agent communication within the OCN ecosystem.
-

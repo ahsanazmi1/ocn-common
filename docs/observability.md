@@ -419,4 +419,3 @@ requests
 ---
 
 *This specification is part of the OCN observability framework and should be reviewed quarterly for updates and improvements.*
-
