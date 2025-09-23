@@ -75,10 +75,10 @@ OCN Common defines standardized event schemas for inter-agent communication:
 ## Contract Validation
 
 ```python
-from ocn_common.contracts import validate_event
+from ocn_common.contracts import validate_cloudevent
 
 # Validate a CloudEvent against OCN schemas
-is_valid = validate_event(event_data, schema_version="v1")
+is_valid = validate_cloudevent(event_data, "ocn.orca.decision.v1")
 ```
 
 ## Trace Utilities
