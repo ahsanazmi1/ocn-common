@@ -320,11 +320,11 @@ def validate_signature(public_key_pem: str, message: bytes, signature: str) -> b
     try:
         # Load public key
         public_key = serialization.load_pem_public_key(public_key_pem.encode())
-        
+
         # Decode signature
         signature_bytes = base64.b64decode(signature)
         r, s = decode_dss_signature(signature_bytes)
-        
+
         # Verify signature
         public_key.verify(
             signature_bytes,
@@ -345,7 +345,7 @@ def is_key_expired(key_metadata: dict) -> bool:
     """Check if key is expired."""
     if key_metadata.get("status") != "active":
         return True
-    
+
     expires_at = datetime.fromisoformat(
         key_metadata["expires"].replace("Z", "+00:00")
     )
@@ -481,21 +481,21 @@ import secrets
 def generate_ecdsa_keypair() -> tuple[str, str]:
     """Generate ECDSA P-256 keypair."""
     private_key = ec.generate_private_key(ec.SECP256R1())
-    
+
     # Serialize private key
     private_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    
+
     # Serialize public key
     public_key = private_key.public_key()
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    
+
     return private_pem.decode(), public_pem.decode()
 ```
 
@@ -510,7 +510,7 @@ class KeyManager:
     def __init__(self, kms_client, s3_client):
         self.kms_client = kms_client
         self.s3_client = s3_client
-    
+
     def store_key(self, key_id: str, key_data: bytes, metadata: dict):
         """Store encrypted key in S3 with KMS encryption."""
         # Encrypt key data with KMS
@@ -518,7 +518,7 @@ class KeyManager:
             KeyId='alias/ocn-key-encryption',
             Plaintext=key_data
         )
-        
+
         # Store in S3
         self.s3_client.put_object(
             Bucket='ocn-keys',
@@ -526,7 +526,7 @@ class KeyManager:
             Body=response['CiphertextBlob'],
             Metadata=metadata
         )
-    
+
     def retrieve_key(self, key_id: str) -> bytes:
         """Retrieve and decrypt key from S3."""
         # Get encrypted key from S3
@@ -534,13 +534,14 @@ class KeyManager:
             Bucket='ocn-keys',
             Key=f'keys/{key_id}'
         )
-        
+
         # Decrypt with KMS
         decrypt_response = self.kms_client.decrypt(
             CiphertextBlob=response['Body'].read()
         )
-        
+
         return decrypt_response['Plaintext']
 ```
 
 This key handling specification ensures secure, compliant, and auditable cryptographic operations across the OCN ecosystem.
+

@@ -301,13 +301,13 @@ class AP2Migrator:
             private_key_pem.encode(),
             password=None
         )
-    
+
     def migrate_payment_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Migrate pre-AP2 payment request to PaymentMandate."""
-        
+
         # Generate new mandate ID
         mandate_id = f"payment_{uuid.uuid4()}"
-        
+
         # Create VC stub for payment instrument
         vc_stub = {
             "last_four": request["card_number"][-4:],
@@ -316,7 +316,7 @@ class AP2Migrator:
             "exp_year": request["expiry_year"],
             "holder_name": request["holder_name"]
         }
-        
+
         # Build payment mandate
         mandate = {
             "type": "PaymentMandate",
@@ -342,18 +342,18 @@ class AP2Migrator:
                 }
             }
         }
-        
+
         # Sign mandate
         mandate["signature"] = self._sign_mandate(mandate)
-        
+
         return mandate
-    
+
     def migrate_transaction_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Migrate pre-AP2 transaction request to IntentMandate."""
-        
+
         # Generate new mandate ID
         mandate_id = f"intent_{uuid.uuid4()}"
-        
+
         # Build intent mandate
         mandate = {
             "type": "IntentMandate",
@@ -376,18 +376,18 @@ class AP2Migrator:
                 }
             }
         }
-        
+
         # Sign mandate
         mandate["signature"] = self._sign_mandate(mandate)
-        
+
         return mandate
-    
+
     def migrate_shopping_cart(self, cart: Dict[str, Any]) -> Dict[str, Any]:
         """Migrate pre-AP2 shopping cart to CartMandate."""
-        
+
         # Generate new mandate ID
         mandate_id = f"cart_{uuid.uuid4()}"
-        
+
         # Migrate cart items
         migrated_items = []
         for item in cart["items"]:
@@ -404,7 +404,7 @@ class AP2Migrator:
                 }
             }
             migrated_items.append(migrated_item)
-        
+
         # Build cart mandate
         mandate = {
             "type": "CartMandate",
@@ -422,12 +422,12 @@ class AP2Migrator:
                 "merchant_id": cart["merchant_id"]
             }
         }
-        
+
         # Sign mandate
         mandate["signature"] = self._sign_mandate(mandate)
-        
+
         return mandate
-    
+
     def _map_card_type(self, card_type: str) -> str:
         """Map card type to standard brand."""
         mapping = {
@@ -437,7 +437,7 @@ class AP2Migrator:
             "discover": "discover"
         }
         return mapping.get(card_type.lower(), "unknown")
-    
+
     def _map_transaction_type(self, transaction_type: str) -> str:
         """Map transaction type to standard action."""
         mapping = {
@@ -447,42 +447,42 @@ class AP2Migrator:
             "capture": "capture"
         }
         return mapping.get(transaction_type.lower(), "purchase")
-    
+
     def _restructure_location(self, location: Optional[Dict]) -> Optional[Dict]:
         """Restructure location object."""
         if not location:
             return None
-        
+
         return {
             "latitude": location.get("lat"),
             "longitude": location.get("lng")
         }
-    
+
     def _calculate_expiry(self, timestamp: str) -> str:
         """Calculate mandate expiry (30 minutes from timestamp)."""
         dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
         expiry = dt + timedelta(minutes=30)
         return expiry.isoformat().replace("+00:00", "Z")
-    
+
     def _sign_mandate(self, mandate: Dict[str, Any]) -> Dict[str, str]:
         """Sign mandate with ECDSA."""
         # Create signature data (exclude signature field)
         signature_data = {k: v for k, v in mandate.items() if k != "signature"}
         message = json.dumps(signature_data, sort_keys=True).encode()
-        
+
         # Sign message
         signature = self.private_key.sign(
             message,
             ec.ECDSA(hashes.SHA256())
         )
-        
+
         # Get public key
         public_key = self.private_key.public_key()
         public_key_bytes = public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         )
-        
+
         return {
             "algorithm": "ES256",
             "public_key": public_key_bytes.hex(),
@@ -540,12 +540,12 @@ is_valid_cart = validate_ap2_mandate(cart_mandate, cart_schema)
 ```python
 def test_migration_completeness(pre_ap2_data: Dict, ap2_mandate: Dict) -> bool:
     """Test that all pre-AP2 data is preserved in AP2 mandate."""
-    
+
     # Test payment request migration
     if "payment_request" in pre_ap2_data:
         payment = pre_ap2_data["payment_request"]
         mandate = ap2_mandate["payment"]
-        
+
         assert payment["amount"] == mandate["amount"]
         assert payment["currency"] == mandate["currency"]
         assert payment["merchant_id"] == mandate["merchant_id"]
@@ -554,29 +554,29 @@ def test_migration_completeness(pre_ap2_data: Dict, ap2_mandate: Dict) -> bool:
         assert payment["expiry_month"] == mandate["instrument"]["stub"]["exp_month"]
         assert payment["expiry_year"] == mandate["instrument"]["stub"]["exp_year"]
         assert payment["holder_name"] == mandate["instrument"]["stub"]["holder_name"]
-    
+
     # Test transaction request migration
     if "transaction_request" in pre_ap2_data:
         transaction = pre_ap2_data["transaction_request"]
         mandate = ap2_mandate["intent"]
-        
+
         assert transaction["amount"] == mandate["amount"]
         assert transaction["currency"] == mandate["currency"]
         assert transaction["merchant_id"] == mandate["merchant_id"]
         assert transaction["description"] == mandate["description"]
         assert transaction["mcc_code"] == mandate["metadata"]["mcc"]
         assert transaction["channel"] == mandate["metadata"]["channel"]
-    
+
     # Test shopping cart migration
     if "shopping_cart" in pre_ap2_data:
         cart = pre_ap2_data["shopping_cart"]
         mandate = ap2_mandate["cart"]
-        
+
         assert cart["subtotal"] == mandate["subtotal"]
         assert cart["total_amount"] == mandate["total"]
         assert cart["currency"] == mandate["currency"]
         assert len(cart["items"]) == len(mandate["items"])
-        
+
         for i, item in enumerate(cart["items"]):
             migrated_item = mandate["items"][i]
             assert item["id"] == migrated_item["id"]
@@ -584,7 +584,7 @@ def test_migration_completeness(pre_ap2_data: Dict, ap2_mandate: Dict) -> bool:
             assert item["quantity"] == migrated_item["quantity"]
             assert item["price"] == migrated_item["unit_price"]
             assert item["total"] == migrated_item["total_price"]
-    
+
     return True
 ```
 
@@ -597,12 +597,12 @@ class AP2Rollback:
     def __init__(self, migration_log: str):
         """Initialize rollback with migration log."""
         self.migration_log = migration_log
-    
+
     def rollback_mandate(self, ap2_mandate: Dict[str, Any]) -> Dict[str, Any]:
         """Rollback AP2 mandate to pre-AP2 format."""
-        
+
         mandate_type = ap2_mandate["type"]
-        
+
         if mandate_type == "PaymentMandate":
             return self._rollback_payment_mandate(ap2_mandate)
         elif mandate_type == "IntentMandate":
@@ -611,13 +611,13 @@ class AP2Rollback:
             return self._rollback_cart_mandate(ap2_mandate)
         else:
             raise ValueError(f"Unknown mandate type: {mandate_type}")
-    
+
     def _rollback_payment_mandate(self, mandate: Dict[str, Any]) -> Dict[str, Any]:
         """Rollback PaymentMandate to payment request format."""
         payment = mandate["payment"]
         instrument = payment["instrument"]
         stub = instrument["stub"]
-        
+
         return {
             "payment_request": {
                 "id": mandate["id"],
@@ -662,3 +662,4 @@ class AP2Rollback:
 - [ ] Plan deprecation of pre-AP2 support
 
 This migration guide ensures smooth transition from pre-AP2 formats to AP2 mandates while maintaining data integrity and system reliability.
+

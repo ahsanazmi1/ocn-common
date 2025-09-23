@@ -90,13 +90,13 @@ def setup_application_insights():
     if not connection_string:
         logging.warning("APPLICATIONINSIGHTS_CONNECTION_STRING not set, skipping Application Insights")
         return
-    
+
     # Create Azure log handler
     handler = AzureLogHandler(connection_string=connection_string)
-    
+
     # Add service-specific properties
     handler.add_telemetry_processor(add_service_properties)
-    
+
     # Configure root logger
     root_logger = logging.getLogger()
     root_logger.addHandler(handler)
@@ -126,7 +126,7 @@ function setupApplicationInsights() {
         console.warn('APPLICATIONINSIGHTS_CONNECTION_STRING not set');
         return;
     }
-    
+
     appInsights.setup(connectionString)
         .setAutoDependencyCorrelation(true)
         .setAutoCollectRequests(true)
@@ -137,7 +137,7 @@ function setupApplicationInsights() {
         .setUseDiskRetryCaching(true)
         .setSendLiveMetrics(true)
         .start();
-    
+
     // Add custom properties
     appInsights.defaultClient.addTelemetryProcessor((envelope) => {
         envelope.data.baseData.properties['service'] = process.env.OCN_SERVICE_NAME || 'unknown';
@@ -298,7 +298,7 @@ resource "azurerm_application_insights" "ocn_insights" {
   location            = azurerm_resource_group.ocn_rg.location
   resource_group_name = azurerm_resource_group.ocn_rg.name
   application_type    = "web"
-  
+
   tags = {
     Environment = var.environment
     Service     = "ocn-observability"
@@ -311,7 +311,7 @@ resource "azurerm_log_analytics_workspace" "ocn_logs" {
   resource_group_name = azurerm_resource_group.ocn_rg.name
   sku                 = "PerGB2018"
   retention_in_days   = 90
-  
+
   tags = {
     Environment = var.environment
     Service     = "ocn-observability"
@@ -485,3 +485,4 @@ def should_sample_log(log_level: str) -> bool:
 ---
 
 *This infrastructure guide is part of the OCN observability framework. For questions or issues, refer to the main [Observability Specification](../docs/observability.md).*
+

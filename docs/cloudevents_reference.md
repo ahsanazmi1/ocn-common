@@ -135,7 +135,7 @@ AI-generated explanation for a decision.
       },
       {
         "factor": "merchant_trust",
-        "impact": "positive", 
+        "impact": "positive",
         "weight": 0.3,
         "description": "Merchant has good reputation and low fraud rate"
       },

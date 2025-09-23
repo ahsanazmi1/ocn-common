@@ -228,7 +228,7 @@ customEvents
 | where timestamp > ago(7d)
 | extend confidence = todouble(customDimensions.confidence_score)
 | extend explanation_time = todouble(customDimensions.explanation_time_ms)
-| summarize 
+| summarize
     explanation_count = count(),
     avg_confidence = avg(confidence),
     avg_time = avg(explanation_time)
@@ -292,7 +292,7 @@ customEvents
 | where name in ("decision_processed", "receipt_stored")
 | extend processing_time = todouble(customDimensions.processing_time_ms)
 | extend event_type = tostring(customDimensions.event_type)
-| summarize 
+| summarize
     p50 = percentile(processing_time, 50),
     p95 = percentile(processing_time, 95),
     p99 = percentile(processing_time, 99)
@@ -419,3 +419,4 @@ requests
 ---
 
 *This specification is part of the OCN observability framework and should be reviewed quarterly for updates and improvements.*
+

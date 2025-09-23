@@ -380,7 +380,7 @@ Indicates agent availability and processing modality.
     }
   },
   "payment_mandate": {
-    "type": "PaymentMandate", 
+    "type": "PaymentMandate",
     "id": "payment_001",
     "payment": {
       "method": "card",
@@ -402,3 +402,4 @@ Indicates agent availability and processing modality.
 ```
 
 This specification provides the foundation for secure, interoperable agent communication within the OCN ecosystem.
+
