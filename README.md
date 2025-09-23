@@ -23,12 +23,25 @@ git clone https://github.com/ocn-ai/ocn-common.git
 cd ocn-common
 
 # Setup development environment
-python -m venv .venv && . .venv/bin/activate
-pip install -U pip && pip install -e .[dev]
+make setup
 
 # Run tests
-pytest -q
+make test
+
+# See usage examples
+make run
 ```
+
+### Available Make Commands
+
+- `make setup` - Create venv, install deps + dev extras, install pre-commit hooks
+- `make lint` - Run ruff and black checks
+- `make fmt` - Format code with black
+- `make test` - Run pytest with coverage (≥80%)
+- `make run` - Show usage examples and available demos
+- `make clean` - Remove virtual environment and cache files
+- `make validate-schemas` - Validate all JSON schemas
+- `make test-contracts` - Run contract validation tests
 
 ## OCN Ecosystem
 
