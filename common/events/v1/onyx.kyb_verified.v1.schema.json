@@ -1,264 +1,308 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
-  "title": "Onyx KYB Verified CloudEvent",
-  "description": "Schema for Onyx KYB (Know Your Business) verification events, following CloudEvents v1.0 specification",
-  "type": "object",
-  "required": ["specversion", "id", "source", "type", "subject", "time", "data"],
-  "properties": {
-    "specversion": {
-      "type": "string",
-      "enum": ["1.0"],
-      "description": "The version of the CloudEvents specification which the event uses"
-    },
-    "id": {
-      "type": "string",
-      "description": "A unique identifier for the event"
-    },
-    "source": {
-      "type": "string",
-      "enum": ["onyx"],
-      "description": "The context in which the event happened"
-    },
-    "type": {
-      "type": "string",
-      "enum": ["ocn.onyx.kyb_verified.v1"],
-      "description": "The type of event, e.g., 'ocn.onyx.kyb_verified.v1'"
-    },
-    "subject": {
-      "type": "string",
-      "description": "The subject of the event in the context of the event producer (e.g., trace_id)"
-    },
-    "time": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The time when the event occurred as a UTC ISO 8601 timestamp"
-    },
-    "datacontenttype": {
-      "type": "string",
-      "enum": ["application/json"],
-      "description": "Content type of the data payload"
-    },
-    "dataschema": {
-      "type": "string",
-      "format": "uri",
-      "description": "A link to the schema that the data adheres to"
-    },
-    "data": {
-      "type": "object",
-      "description": "The KYB verification payload",
-      "required": ["verification_result", "entity_info", "timestamp", "metadata"],
-      "properties": {
-        "verification_result": {
-          "type": "object",
-          "description": "The result of the KYB verification",
-          "required": ["status", "checks", "reason", "entity_id", "verified_at"],
-          "properties": {
-            "status": {
-              "type": "string",
-              "enum": ["verified", "review", "fail"],
-              "description": "Overall verification status"
-            },
-            "checks": {
-              "type": "array",
-              "description": "Individual verification checks performed",
-              "items": {
-                "type": "object",
-                "required": ["check_name", "status", "reason", "details"],
-                "properties": {
-                  "check_name": {
-                    "type": "string",
-                    "description": "Name of the verification check"
-                  },
-                  "status": {
-                    "type": "string",
-                    "enum": ["verified", "review", "fail"],
-                    "description": "Status of the individual check"
-                  },
-                  "reason": {
-                    "type": "string",
-                    "description": "Reason for the check status"
-                  },
-                  "details": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
+    "title": "Onyx KYB Verified CloudEvent",
+    "description": "Schema for Onyx KYB (Know Your Business) verification events, following CloudEvents v1.0 specification",
+    "type": "object",
+    "required": [
+        "specversion",
+        "id",
+        "source",
+        "type",
+        "subject",
+        "time",
+        "data"
+    ],
+    "properties": {
+        "specversion": {
+            "type": "string",
+            "enum": [
+                "1.0"
+            ],
+            "description": "The version of the CloudEvents specification which the event uses"
+        },
+        "id": {
+            "type": "string",
+            "description": "A unique identifier for the event"
+        },
+        "source": {
+            "type": "string",
+            "enum": [
+                "onyx"
+            ],
+            "description": "The context in which the event happened"
+        },
+        "type": {
+            "type": "string",
+            "enum": [
+                "ocn.onyx.kyb_verified.v1"
+            ],
+            "description": "The type of event, e.g., 'ocn.onyx.kyb_verified.v1'"
+        },
+        "subject": {
+            "type": "string",
+            "description": "The subject of the event in the context of the event producer (e.g., trace_id)"
+        },
+        "time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The time when the event occurred as a UTC ISO 8601 timestamp"
+        },
+        "datacontenttype": {
+            "type": "string",
+            "enum": [
+                "application/json"
+            ],
+            "description": "Content type of the data payload"
+        },
+        "dataschema": {
+            "type": "string",
+            "format": "uri",
+            "description": "A link to the schema that the data adheres to"
+        },
+        "data": {
+            "type": "object",
+            "description": "The KYB verification payload",
+            "required": [
+                "verification_result",
+                "entity_info",
+                "timestamp",
+                "metadata"
+            ],
+            "properties": {
+                "verification_result": {
                     "type": "object",
-                    "description": "Additional details about the check",
+                    "description": "The result of the KYB verification",
+                    "required": [
+                        "status",
+                        "checks",
+                        "reason",
+                        "entity_id",
+                        "verified_at"
+                    ],
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "enum": [
+                                "verified",
+                                "review",
+                                "fail"
+                            ],
+                            "description": "Overall verification status"
+                        },
+                        "checks": {
+                            "type": "array",
+                            "description": "Individual verification checks performed",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "check_name",
+                                    "status",
+                                    "reason",
+                                    "details"
+                                ],
+                                "properties": {
+                                    "check_name": {
+                                        "type": "string",
+                                        "description": "Name of the verification check"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "verified",
+                                            "review",
+                                            "fail"
+                                        ],
+                                        "description": "Status of the individual check"
+                                    },
+                                    "reason": {
+                                        "type": "string",
+                                        "description": "Reason for the check status"
+                                    },
+                                    "details": {
+                                        "type": "object",
+                                        "description": "Additional details about the check",
+                                        "additionalProperties": true
+                                    }
+                                }
+                            }
+                        },
+                        "reason": {
+                            "type": "string",
+                            "description": "Overall reason for the verification status"
+                        },
+                        "entity_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the business entity"
+                        },
+                        "verified_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when verification was completed"
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "description": "Additional verification metadata",
+                            "properties": {
+                                "verification_version": {
+                                    "type": "string",
+                                    "description": "Version of the verification system"
+                                },
+                                "rules_applied": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "description": "Number of rules applied during verification"
+                                },
+                                "jurisdiction": {
+                                    "type": "string",
+                                    "description": "Jurisdiction of the entity"
+                                },
+                                "entity_age_days": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "description": "Age of the entity in days"
+                                },
+                                "business_type": {
+                                    "type": "string",
+                                    "description": "Type of business entity"
+                                },
+                                "registration_number": {
+                                    "type": "string",
+                                    "description": "Official registration number"
+                                }
+                            }
+                        }
+                    }
+                },
+                "entity_info": {
+                    "type": "object",
+                    "description": "Entity information used for verification",
+                    "required": [
+                        "business_name",
+                        "jurisdiction",
+                        "entity_age_days"
+                    ],
+                    "properties": {
+                        "business_name": {
+                            "type": "string",
+                            "description": "Legal business name"
+                        },
+                        "jurisdiction": {
+                            "type": "string",
+                            "description": "Country/jurisdiction of registration"
+                        },
+                        "entity_age_days": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Age of entity in days"
+                        },
+                        "registration_status": {
+                            "type": "string",
+                            "description": "Current registration status"
+                        },
+                        "sanctions_flags": {
+                            "type": "array",
+                            "description": "List of sanctions-related flags",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "business_type": {
+                            "type": "string",
+                            "description": "Type of business entity"
+                        },
+                        "registration_number": {
+                            "type": "string",
+                            "description": "Official registration number"
+                        }
+                    }
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Verification timestamp"
+                },
+                "metadata": {
+                    "type": "object",
+                    "description": "Additional verification metadata",
                     "additionalProperties": true
-                  }
                 }
-              }
-            },
-            "reason": {
-              "type": "string",
-              "description": "Overall reason for the verification status"
-            },
-            "entity_id": {
-              "type": "string",
-              "description": "Unique identifier for the business entity"
-            },
-            "verified_at": {
-              "type": "string",
-              "format": "date-time",
-              "description": "Timestamp when verification was completed"
-            },
-            "metadata": {
-              "type": "object",
-              "description": "Additional verification metadata",
-              "properties": {
-                "verification_version": {
-                  "type": "string",
-                  "description": "Version of the verification system"
+            }
+        }
+    },
+    "examples": [
+        {
+            "specversion": "1.0",
+            "id": "evt_onyx_kyb_001",
+            "source": "onyx",
+            "type": "ocn.onyx.kyb_verified.v1",
+            "subject": "kyb_12345",
+            "time": "2024-01-21T12:00:01Z",
+            "datacontenttype": "application/json",
+            "dataschema": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
+            "data": {
+                "verification_result": {
+                    "status": "verified",
+                    "checks": [
+                        {
+                            "check_name": "jurisdiction_verification",
+                            "status": "verified",
+                            "reason": "Jurisdiction US is whitelisted",
+                            "details": {
+                                "jurisdiction": "US",
+                                "whitelisted": true
+                            }
+                        },
+                        {
+                            "check_name": "entity_age_verification",
+                            "status": "verified",
+                            "reason": "Entity age 1000 days meets minimum requirement of 365 days",
+                            "details": {
+                                "entity_age_days": 1000,
+                                "minimum_required_days": 365,
+                                "meets_requirement": true
+                            }
+                        },
+                        {
+                            "check_name": "sanctions_screening",
+                            "status": "verified",
+                            "reason": "No sanctions flags detected",
+                            "details": {
+                                "sanctions_flags": [],
+                                "flagged_keywords": [],
+                                "is_flagged": false
+                            }
+                        }
+                    ],
+                    "reason": "All verification checks passed successfully",
+                    "entity_id": "entity_12345",
+                    "verified_at": "2024-01-21T12:00:01Z",
+                    "metadata": {
+                        "verification_version": "1.0.0",
+                        "rules_applied": 3,
+                        "jurisdiction": "US",
+                        "entity_age_days": 1000,
+                        "business_type": "corporation",
+                        "registration_number": "123456789"
+                    }
                 },
-                "rules_applied": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "Number of rules applied during verification"
+                "entity_info": {
+                    "business_name": "Acme Corp",
+                    "jurisdiction": "US",
+                    "entity_age_days": 1000,
+                    "registration_status": "active",
+                    "sanctions_flags": [],
+                    "business_type": "corporation",
+                    "registration_number": "123456789"
                 },
-                "jurisdiction": {
-                  "type": "string",
-                  "description": "Jurisdiction of the entity"
-                },
-                "entity_age_days": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "Age of the entity in days"
-                },
-                "business_type": {
-                  "type": "string",
-                  "description": "Type of business entity"
-                },
-                "registration_number": {
-                  "type": "string",
-                  "description": "Official registration number"
+                "timestamp": "2024-01-21T12:00:01Z",
+                "metadata": {
+                    "service": "onyx",
+                    "version": "1.0.0",
+                    "feature": "kyb_verification",
+                    "trace_id": "kyb_12345"
                 }
-              }
             }
-          }
-        },
-        "entity_info": {
-          "type": "object",
-          "description": "Entity information used for verification",
-          "required": ["business_name", "jurisdiction", "entity_age_days"],
-          "properties": {
-            "business_name": {
-              "type": "string",
-              "description": "Legal business name"
-            },
-            "jurisdiction": {
-              "type": "string",
-              "description": "Country/jurisdiction of registration"
-            },
-            "entity_age_days": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Age of entity in days"
-            },
-            "registration_status": {
-              "type": "string",
-              "description": "Current registration status"
-            },
-            "sanctions_flags": {
-              "type": "array",
-              "description": "List of sanctions-related flags",
-              "items": {
-                "type": "string"
-              }
-            },
-            "business_type": {
-              "type": "string",
-              "description": "Type of business entity"
-            },
-            "registration_number": {
-              "type": "string",
-              "description": "Official registration number"
-            }
-          }
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Verification timestamp"
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Additional verification metadata",
-          "additionalProperties": true
         }
-      }
-    }
-  },
-  "examples": [
-    {
-      "specversion": "1.0",
-      "id": "evt_onyx_kyb_001",
-      "source": "onyx",
-      "type": "ocn.onyx.kyb_verified.v1",
-      "subject": "kyb_12345",
-      "time": "2024-01-21T12:00:01Z",
-      "datacontenttype": "application/json",
-      "dataschema": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
-      "data": {
-        "verification_result": {
-          "status": "verified",
-          "checks": [
-            {
-              "check_name": "jurisdiction_verification",
-              "status": "verified",
-              "reason": "Jurisdiction US is whitelisted",
-              "details": {
-                "jurisdiction": "US",
-                "whitelisted": true
-              }
-            },
-            {
-              "check_name": "entity_age_verification",
-              "status": "verified",
-              "reason": "Entity age 1000 days meets minimum requirement of 365 days",
-              "details": {
-                "entity_age_days": 1000,
-                "minimum_required_days": 365,
-                "meets_requirement": true
-              }
-            },
-            {
-              "check_name": "sanctions_screening",
-              "status": "verified",
-              "reason": "No sanctions flags detected",
-              "details": {
-                "sanctions_flags": [],
-                "flagged_keywords": [],
-                "is_flagged": false
-              }
-            }
-          ],
-          "reason": "All verification checks passed successfully",
-          "entity_id": "entity_12345",
-          "verified_at": "2024-01-21T12:00:01Z",
-          "metadata": {
-            "verification_version": "1.0.0",
-            "rules_applied": 3,
-            "jurisdiction": "US",
-            "entity_age_days": 1000,
-            "business_type": "corporation",
-            "registration_number": "123456789"
-          }
-        },
-        "entity_info": {
-          "business_name": "Acme Corp",
-          "jurisdiction": "US",
-          "entity_age_days": 1000,
-          "registration_status": "active",
-          "sanctions_flags": [],
-          "business_type": "corporation",
-          "registration_number": "123456789"
-        },
-        "timestamp": "2024-01-21T12:00:01Z",
-        "metadata": {
-          "service": "onyx",
-          "version": "1.0.0",
-          "feature": "kyb_verification",
-          "trace_id": "kyb_12345"
-        }
-      }
-    }
-  ]
+    ]
 }
