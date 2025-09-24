@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [Unreleased — Phase 2]
+
+### Added
+- Enhanced explainability schemas for OCN agents
+- CloudEvents validation for explainability events
+- Contract validation for Phase 2 explainability features
+- Documentation scaffolding for Phase 2 development
+
+### Changed
+- None
+
+### Deprecated
+- None
+
+### Removed
+- None
+
+### Fixed
+- None
+
+### Security
+- None
+
+## [Unreleased — Phase 1]
+
 ### Added
 - Initial release of OCN Common library
 - Event schemas for OCN agents (Orca, Weave, etc.)

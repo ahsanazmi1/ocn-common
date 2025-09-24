@@ -4,6 +4,15 @@
 [![Security Validation](https://github.com/ocn-ai/ocn-common/actions/workflows/security.yml/badge.svg)](https://github.com/ocn-ai/ocn-common/actions/workflows/security.yml)
 [![CI](https://github.com/ocn-ai/ocn-common/actions/workflows/ci.yml/badge.svg)](https://github.com/ocn-ai/ocn-common/actions/workflows/ci.yml)
 
+## Phase 2 — Explainability
+
+🚧 **Currently in development** - Phase 2 focuses on enhanced explainability schemas and CloudEvents validation for OCN agents.
+
+- **Status**: Active development on `phase-2-explainability` branch
+- **Features**: Enhanced explainability schemas, CloudEvents validation, contract validation
+- **Issue Tracker**: [Phase 2 Issues](https://github.com/ocn-ai/ocn-common/issues?q=is%3Aopen+is%3Aissue+label%3Aphase-2)
+- **Timeline**: Weeks 4-8 of OCN development roadmap
+
 **OCN Common** provides shared libraries, schemas, and utilities for the [Open Checkout Network (OCN)](https://github.com/ocn-ai/ocn-common) ecosystem.
 
 ## Purpose
