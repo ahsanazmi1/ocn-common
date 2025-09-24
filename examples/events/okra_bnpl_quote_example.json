@@ -1,0 +1,43 @@
+{
+  "specversion": "1.0",
+  "id": "evt_okra_bnpl_001",
+  "source": "okra",
+  "type": "ocn.okra.bnpl_quote.v1",
+  "subject": "quote_12345",
+  "time": "2024-01-21T12:00:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://schemas.ocn.ai/events/v1/okra.bnpl_quote.v1.schema.json",
+  "data": {
+    "quote_result": {
+      "quote_id": "quote_12345",
+      "score": 0.75,
+      "quote": {
+        "limit": 5000,
+        "apr": 18.5,
+        "term_months": 12,
+        "monthly_payment": 458.33
+      },
+      "key_signals": {
+        "amount": 5000,
+        "tenor": 12,
+        "historical_on_time_rate": 0.95,
+        "utilization": 0.3
+      }
+    },
+    "customer_info": {
+      "customer_id": "cust_67890",
+      "credit_profile": {
+        "credit_score": 720,
+        "income": 75000,
+        "debt_to_income_ratio": 0.25
+      }
+    },
+    "timestamp": "2024-01-21T12:00:01Z",
+    "metadata": {
+      "service": "okra",
+      "version": "1.0.0",
+      "feature": "bnpl_scoring",
+      "random_state": 42
+    }
+  }
+}

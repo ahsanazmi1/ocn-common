@@ -1,0 +1,217 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ocn.ai/events/v1/okra.bnpl_quote.v1.schema.json",
+  "title": "Okra BNPL Quote CloudEvent",
+  "description": "Schema for Okra BNPL (Buy Now, Pay Later) quote events, following CloudEvents v1.0 specification",
+  "type": "object",
+  "required": ["specversion", "id", "source", "type", "subject", "time", "data"],
+  "properties": {
+    "specversion": {
+      "type": "string",
+      "enum": ["1.0"],
+      "description": "The version of the CloudEvents specification which the event uses"
+    },
+    "id": {
+      "type": "string",
+      "description": "A unique identifier for the event"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["okra"],
+      "description": "The context in which the event happened"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["ocn.okra.bnpl_quote.v1"],
+      "description": "The type of event, e.g., 'ocn.okra.bnpl_quote.v1'"
+    },
+    "subject": {
+      "type": "string",
+      "description": "The subject of the event in the context of the event producer (e.g., trace_id)"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The time when the event occurred as a UTC ISO 8601 timestamp"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "enum": ["application/json"],
+      "description": "Content type of the data payload"
+    },
+    "dataschema": {
+      "type": "string",
+      "format": "uri",
+      "description": "A link to the schema that the data adheres to"
+    },
+    "data": {
+      "type": "object",
+      "description": "The BNPL quote payload",
+      "required": ["quote_result", "customer_info", "timestamp", "metadata"],
+      "properties": {
+        "quote_result": {
+          "type": "object",
+          "description": "The BNPL quote result",
+          "required": ["quote_id", "score", "quote", "key_signals"],
+          "properties": {
+            "quote_id": {
+              "type": "string",
+              "description": "Unique identifier for the quote"
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "BNPL risk score"
+            },
+            "quote": {
+              "type": "object",
+              "description": "BNPL quote details",
+              "required": ["limit", "apr", "term_months", "monthly_payment"],
+              "properties": {
+                "limit": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Credit limit offered"
+                },
+                "apr": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Annual Percentage Rate"
+                },
+                "term_months": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Loan term in months"
+                },
+                "monthly_payment": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Monthly payment amount"
+                }
+              }
+            },
+            "key_signals": {
+              "type": "object",
+              "description": "Key signals that influenced the quote",
+              "required": ["amount", "tenor", "historical_on_time_rate", "utilization"],
+              "properties": {
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Requested loan amount"
+                },
+                "tenor": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Requested loan term in months"
+                },
+                "historical_on_time_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Historical on-time payment rate"
+                },
+                "utilization": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Current credit utilization ratio"
+                }
+              }
+            }
+          }
+        },
+        "customer_info": {
+          "type": "object",
+          "description": "Customer information used for scoring",
+          "required": ["customer_id", "credit_profile"],
+          "properties": {
+            "customer_id": {
+              "type": "string",
+              "description": "Unique customer identifier"
+            },
+            "credit_profile": {
+              "type": "object",
+              "description": "Customer credit profile",
+              "required": ["credit_score", "income", "debt_to_income_ratio"],
+              "properties": {
+                "credit_score": {
+                  "type": "integer",
+                  "minimum": 300,
+                  "maximum": 850,
+                  "description": "Customer credit score"
+                },
+                "income": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Annual income"
+                },
+                "debt_to_income_ratio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Debt-to-income ratio"
+                }
+              }
+            }
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Quote timestamp"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional quote metadata",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "specversion": "1.0",
+      "id": "evt_okra_bnpl_001",
+      "source": "okra",
+      "type": "ocn.okra.bnpl_quote.v1",
+      "subject": "quote_12345",
+      "time": "2024-01-21T12:00:01Z",
+      "datacontenttype": "application/json",
+      "dataschema": "https://schemas.ocn.ai/events/v1/okra.bnpl_quote.v1.schema.json",
+      "data": {
+        "quote_result": {
+          "quote_id": "quote_12345",
+          "score": 0.75,
+          "quote": {
+            "limit": 5000,
+            "apr": 18.5,
+            "term_months": 12,
+            "monthly_payment": 458.33
+          },
+          "key_signals": {
+            "amount": 5000,
+            "tenor": 12,
+            "historical_on_time_rate": 0.95,
+            "utilization": 0.3
+          }
+        },
+        "customer_info": {
+          "customer_id": "cust_67890",
+          "credit_profile": {
+            "credit_score": 720,
+            "income": 75000,
+            "debt_to_income_ratio": 0.25
+          }
+        },
+        "timestamp": "2024-01-21T12:00:01Z",
+        "metadata": {
+          "service": "okra",
+          "version": "1.0.0",
+          "feature": "bnpl_scoring",
+          "random_state": 42
+        }
+      }
+    }
+  ]
+}

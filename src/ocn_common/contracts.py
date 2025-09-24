@@ -182,6 +182,10 @@ class ContractValidator:
                 "ocn.orca.decision.v1": "orca.decision.v1",
                 "ocn.orca.explanation.v1": "orca.explanation.v1",
                 "ocn.weave.audit.v1": "weave.audit.v1",
+                # Phase 2 event types
+                "ocn.orion.explanation.v1": "orion.explanation.v1",
+                "ocn.okra.bnpl_quote.v1": "okra.bnpl_quote.v1",
+                "ocn.onyx.kyb_verified.v1": "onyx.kyb_verified.v1",
             }
 
             schema_name = type_to_schema.get(type_name)
