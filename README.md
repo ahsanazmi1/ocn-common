@@ -60,6 +60,7 @@ OCN Common is part of the broader Open Checkout Network ecosystem:
 - **[Orca](https://github.com/ocn-ai/orca)** - Risk decision engine
 - **[Weave](https://github.com/ocn-ai/weave)** - Receipt ledger
 - **[Opal](https://github.com/ocn-ai/opal)** - Payment orchestration
+- **[Okra](https://github.com/ocn-ai/okra)** - Credit scoring and BNPL
 - **[Onyx](https://github.com/ocn-ai/onyx)** - Trust registry
 - **[Olive](https://github.com/ocn-ai/olive)** - Incentive management
 - **[Oasis](https://github.com/ocn-ai/oasis)** - Treasury management
@@ -72,6 +73,15 @@ OCN Common defines standardized event schemas for inter-agent communication:
 ### Decision Events
 - `orca.decision.v1` - Risk decision outcomes
 - `orca.explanation.v1` - Decision explanations
+
+### Credit Events
+- `okra.bnpl_quote.v1` - BNPL scoring and quotes
+
+### Payout Events
+- `orion.explanation.v1` - Payout optimization explanations
+
+### Verification Events
+- `onyx.kyb_verified.v1` - KYB verification results
 
 ### Audit Events
 - `weave.audit.v1` - Receipt audit trails
