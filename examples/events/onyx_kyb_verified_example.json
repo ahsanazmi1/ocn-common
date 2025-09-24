@@ -1,0 +1,92 @@
+{
+  "specversion": "1.0",
+  "id": "evt_onyx_kyb_001",
+  "source": "onyx",
+  "type": "ocn.onyx.kyb_verified.v1",
+  "subject": "kyb_12345",
+  "time": "2024-01-21T12:00:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
+  "data": {
+    "verification_result": {
+      "status": "verified",
+      "checks": [
+        {
+          "check_name": "jurisdiction_verification",
+          "status": "verified",
+          "reason": "Jurisdiction US is whitelisted",
+          "details": {
+            "jurisdiction": "US",
+            "whitelisted": true
+          }
+        },
+        {
+          "check_name": "entity_age_verification",
+          "status": "verified",
+          "reason": "Entity age 1000 days meets minimum requirement of 365 days",
+          "details": {
+            "entity_age_days": 1000,
+            "minimum_required_days": 365,
+            "meets_requirement": true
+          }
+        },
+        {
+          "check_name": "sanctions_screening",
+          "status": "verified",
+          "reason": "No sanctions flags detected",
+          "details": {
+            "sanctions_flags": [],
+            "flagged_keywords": [],
+            "is_flagged": false
+          }
+        },
+        {
+          "check_name": "business_name_validation",
+          "status": "verified",
+          "reason": "Business name is valid and properly formatted",
+          "details": {
+            "business_name": "Acme Corp",
+            "length": 8,
+            "contains_digits": false
+          }
+        },
+        {
+          "check_name": "registration_status_verification",
+          "status": "verified",
+          "reason": "Registration status 'active' is valid",
+          "details": {
+            "registration_status": "active",
+            "is_valid": true
+          }
+        }
+      ],
+      "reason": "All verification checks passed successfully",
+      "entity_id": "entity_12345",
+      "verified_at": "2024-01-21T12:00:01Z",
+      "metadata": {
+        "verification_version": "1.0.0",
+        "rules_applied": 5,
+        "jurisdiction": "US",
+        "entity_age_days": 1000,
+        "business_type": "corporation",
+        "registration_number": "123456789"
+      }
+    },
+    "entity_info": {
+      "business_name": "Acme Corp",
+      "jurisdiction": "US",
+      "entity_age_days": 1000,
+      "registration_status": "active",
+      "sanctions_flags": [],
+      "business_type": "corporation",
+      "registration_number": "123456789"
+    },
+    "timestamp": "2024-01-21T12:00:01Z",
+    "metadata": {
+      "service": "onyx",
+      "version": "1.0.0",
+      "feature": "kyb_verification",
+      "trace_id": "kyb_12345"
+    }
+  }
+}

@@ -1,0 +1,331 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.ocn.ai/events/v1/orion.explanation.v1.schema.json",
+  "title": "Orion Explanation CloudEvent",
+  "description": "Schema for Orion payout optimization explanation events, following CloudEvents v1.0 specification",
+  "type": "object",
+  "required": ["specversion", "id", "source", "type", "subject", "time", "data"],
+  "properties": {
+    "specversion": {
+      "type": "string",
+      "enum": ["1.0"],
+      "description": "The version of the CloudEvents specification which the event uses"
+    },
+    "id": {
+      "type": "string",
+      "description": "A unique identifier for the event"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["orion"],
+      "description": "The context in which the event happened"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["ocn.orion.explanation.v1"],
+      "description": "The type of event, e.g., 'ocn.orion.explanation.v1'"
+    },
+    "subject": {
+      "type": "string",
+      "description": "The subject of the event in the context of the event producer (e.g., trace_id)"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The time when the event occurred as a UTC ISO 8601 timestamp"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "enum": ["application/json"],
+      "description": "Content type of the data payload"
+    },
+    "dataschema": {
+      "type": "string",
+      "format": "uri",
+      "description": "A link to the schema that the data adheres to"
+    },
+    "data": {
+      "type": "object",
+      "description": "The payout optimization explanation payload",
+      "required": ["verification_result", "context", "timestamp", "metadata"],
+      "properties": {
+        "verification_result": {
+          "type": "object",
+          "description": "The result of the payout optimization",
+          "required": ["best_rail", "ranked_rails", "explanation", "optimization_id"],
+          "properties": {
+            "best_rail": {
+              "type": "object",
+              "description": "The selected payout rail",
+              "required": ["rail_type", "score", "cost", "speed", "limits"],
+              "properties": {
+                "rail_type": {
+                  "type": "string",
+                  "enum": ["ach", "wire", "rtp", "v_card"],
+                  "description": "Type of payout rail"
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Optimization score for this rail"
+                },
+                "cost": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Cost per transaction"
+                },
+                "speed": {
+                  "type": "string",
+                  "enum": ["instant", "same_day", "next_day", "2_business_days"],
+                  "description": "Transaction speed"
+                },
+                "limits": {
+                  "type": "object",
+                  "description": "Rail-specific limits",
+                  "required": ["max_amount", "daily_limit"],
+                  "properties": {
+                    "max_amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "description": "Maximum transaction amount"
+                    },
+                    "daily_limit": {
+                      "type": "number",
+                      "minimum": 0,
+                      "description": "Daily transaction limit"
+                    }
+                  }
+                }
+              }
+            },
+            "ranked_rails": {
+              "type": "array",
+              "description": "All rails ranked by optimization score",
+              "items": {
+                "type": "object",
+                "required": ["rail_type", "score", "cost", "speed", "limits"],
+                "properties": {
+                  "rail_type": {
+                    "type": "string",
+                    "enum": ["ach", "wire", "rtp", "v_card"],
+                    "description": "Type of payout rail"
+                  },
+                  "score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Optimization score for this rail"
+                  },
+                  "cost": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Cost per transaction"
+                  },
+                  "speed": {
+                    "type": "string",
+                    "enum": ["instant", "same_day", "next_day", "2_business_days"],
+                    "description": "Transaction speed"
+                  },
+                  "limits": {
+                    "type": "object",
+                    "description": "Rail-specific limits",
+                    "required": ["max_amount", "daily_limit"],
+                    "properties": {
+                      "max_amount": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Maximum transaction amount"
+                      },
+                      "daily_limit": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Daily transaction limit"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "explanation": {
+              "type": "object",
+              "description": "Explanation for the optimization choice",
+              "required": ["reason", "signals", "mitigation", "confidence"],
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "description": "Primary reason for rail selection"
+                },
+                "signals": {
+                  "type": "array",
+                  "description": "Key signals that influenced the decision",
+                  "items": {
+                    "type": "object",
+                    "required": ["signal", "value", "impact", "weight"],
+                    "properties": {
+                      "signal": {
+                        "type": "string",
+                        "description": "Signal name"
+                      },
+                      "value": {
+                        "type": ["string", "number", "boolean"],
+                        "description": "Signal value"
+                      },
+                      "impact": {
+                        "type": "string",
+                        "enum": ["positive", "negative", "neutral"],
+                        "description": "Impact on decision"
+                      },
+                      "weight": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "Signal weight"
+                      }
+                    }
+                  }
+                },
+                "mitigation": {
+                  "type": "array",
+                  "description": "Risk mitigation strategies",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Explanation confidence score"
+                }
+              }
+            },
+            "optimization_id": {
+              "type": "string",
+              "description": "Unique identifier for the optimization request"
+            }
+          }
+        },
+        "context": {
+          "type": "object",
+          "description": "Context information for the optimization",
+          "required": ["amount", "urgency", "recipient_country"],
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Transaction amount"
+            },
+            "urgency": {
+              "type": "string",
+              "enum": ["low", "medium", "high", "critical"],
+              "description": "Transaction urgency level"
+            },
+            "recipient_country": {
+              "type": "string",
+              "description": "Recipient country code"
+            }
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optimization timestamp"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional optimization metadata",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "specversion": "1.0",
+      "id": "evt_orion_001",
+      "source": "orion",
+      "type": "ocn.orion.explanation.v1",
+      "subject": "opt_12345",
+      "time": "2024-01-21T12:00:01Z",
+      "datacontenttype": "application/json",
+      "dataschema": "https://schemas.ocn.ai/events/v1/orion.explanation.v1.schema.json",
+      "data": {
+        "verification_result": {
+          "best_rail": {
+            "rail_type": "rtp",
+            "score": 0.85,
+            "cost": 0.25,
+            "speed": "instant",
+            "limits": {
+              "max_amount": 25000,
+              "daily_limit": 100000
+            }
+          },
+          "ranked_rails": [
+            {
+              "rail_type": "rtp",
+              "score": 0.85,
+              "cost": 0.25,
+              "speed": "instant",
+              "limits": {
+                "max_amount": 25000,
+                "daily_limit": 100000
+              }
+            },
+            {
+              "rail_type": "ach",
+              "score": 0.72,
+              "cost": 0.15,
+              "speed": "next_day",
+              "limits": {
+                "max_amount": 50000,
+                "daily_limit": 500000
+              }
+            }
+          ],
+          "explanation": {
+            "reason": "RTP selected for optimal balance of speed and cost for moderate amount",
+            "signals": [
+              {
+                "signal": "transaction_amount",
+                "value": 15000,
+                "impact": "positive",
+                "weight": 0.4
+              },
+              {
+                "signal": "speed_requirement",
+                "value": "high",
+                "impact": "positive",
+                "weight": 0.3
+              },
+              {
+                "signal": "cost_sensitivity",
+                "value": "medium",
+                "impact": "neutral",
+                "weight": 0.3
+              }
+            ],
+            "mitigation": [
+              "Monitor for failed transactions",
+              "Fallback to ACH if RTP unavailable"
+            ],
+            "confidence": 0.88
+          },
+          "optimization_id": "opt_12345"
+        },
+        "context": {
+          "amount": 15000,
+          "urgency": "high",
+          "recipient_country": "US"
+        },
+        "timestamp": "2024-01-21T12:00:01Z",
+        "metadata": {
+          "service": "orion",
+          "version": "1.0.0",
+          "feature": "payout_optimization"
+        }
+      }
+    }
+  ]
+}

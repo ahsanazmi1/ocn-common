@@ -354,6 +354,189 @@ Wallet selection decision from Opal wallet agent.
 }
 ```
 
+## Phase 2 — Explainability Events
+
+### Payout Optimization Events
+
+#### ocn.orion.explanation.v1
+
+Payout optimization explanation from Orion payout agent.
+
+```json
+{
+  "specversion": "1.0",
+  "type": "ocn.orion.explanation.v1",
+  "source": "orion",
+  "id": "evt_orion_001",
+  "subject": "opt_12345",
+  "time": "2024-01-21T12:00:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://schemas.ocn.ai/events/v1/orion.explanation.v1.schema.json",
+  "data": {
+    "verification_result": {
+      "best_rail": {
+        "rail_type": "rtp",
+        "score": 0.85,
+        "cost": 0.25,
+        "speed": "instant",
+        "limits": {
+          "max_amount": 25000,
+          "daily_limit": 100000
+        }
+      },
+      "ranked_rails": [
+        {
+          "rail_type": "rtp",
+          "score": 0.85,
+          "cost": 0.25,
+          "speed": "instant",
+          "limits": {
+            "max_amount": 25000,
+            "daily_limit": 100000
+          }
+        }
+      ],
+      "explanation": {
+        "reason": "RTP selected for optimal balance of speed and cost",
+        "signals": [
+          {
+            "signal": "transaction_amount",
+            "value": 15000,
+            "impact": "positive",
+            "weight": 0.4
+          }
+        ],
+        "mitigation": ["Monitor for failed transactions"],
+        "confidence": 0.88
+      },
+      "optimization_id": "opt_12345"
+    },
+    "context": {
+      "amount": 15000,
+      "urgency": "high",
+      "recipient_country": "US"
+    },
+    "timestamp": "2024-01-21T12:00:01Z",
+    "metadata": {
+      "service": "orion",
+      "version": "1.0.0",
+      "feature": "payout_optimization"
+    }
+  }
+}
+```
+
+### BNPL Quote Events
+
+#### ocn.okra.bnpl_quote.v1
+
+Buy Now, Pay Later quote from Okra credit agent.
+
+```json
+{
+  "specversion": "1.0",
+  "type": "ocn.okra.bnpl_quote.v1",
+  "source": "okra",
+  "id": "evt_okra_bnpl_001",
+  "subject": "quote_12345",
+  "time": "2024-01-21T12:00:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://schemas.ocn.ai/events/v1/okra.bnpl_quote.v1.schema.json",
+  "data": {
+    "quote_result": {
+      "quote_id": "quote_12345",
+      "score": 0.75,
+      "quote": {
+        "limit": 5000,
+        "apr": 18.5,
+        "term_months": 12,
+        "monthly_payment": 458.33
+      },
+      "key_signals": {
+        "amount": 5000,
+        "tenor": 12,
+        "historical_on_time_rate": 0.95,
+        "utilization": 0.3
+      }
+    },
+    "customer_info": {
+      "customer_id": "cust_67890",
+      "credit_profile": {
+        "credit_score": 720,
+        "income": 75000,
+        "debt_to_income_ratio": 0.25
+      }
+    },
+    "timestamp": "2024-01-21T12:00:01Z",
+    "metadata": {
+      "service": "okra",
+      "version": "1.0.0",
+      "feature": "bnpl_scoring",
+      "random_state": 42
+    }
+  }
+}
+```
+
+### KYB Verification Events
+
+#### ocn.onyx.kyb_verified.v1
+
+Know Your Business verification from Onyx trust registry.
+
+```json
+{
+  "specversion": "1.0",
+  "type": "ocn.onyx.kyb_verified.v1",
+  "source": "onyx",
+  "id": "evt_onyx_kyb_001",
+  "subject": "kyb_12345",
+  "time": "2024-01-21T12:00:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://schemas.ocn.ai/events/v1/onyx.kyb_verified.v1.schema.json",
+  "data": {
+    "verification_result": {
+      "status": "verified",
+      "checks": [
+        {
+          "check_name": "jurisdiction_verification",
+          "status": "verified",
+          "reason": "Jurisdiction US is whitelisted",
+          "details": {
+            "jurisdiction": "US",
+            "whitelisted": true
+          }
+        }
+      ],
+      "reason": "All verification checks passed successfully",
+      "entity_id": "entity_12345",
+      "verified_at": "2024-01-21T12:00:01Z",
+      "metadata": {
+        "verification_version": "1.0.0",
+        "rules_applied": 5,
+        "jurisdiction": "US",
+        "entity_age_days": 1000
+      }
+    },
+    "entity_info": {
+      "business_name": "Acme Corp",
+      "jurisdiction": "US",
+      "entity_age_days": 1000,
+      "registration_status": "active",
+      "sanctions_flags": [],
+      "business_type": "corporation"
+    },
+    "timestamp": "2024-01-21T12:00:01Z",
+    "metadata": {
+      "service": "onyx",
+      "version": "1.0.0",
+      "feature": "kyb_verification",
+      "trace_id": "kyb_12345"
+    }
+  }
+}
+```
+
 ## Event Routing
 
 ### Routing Rules
